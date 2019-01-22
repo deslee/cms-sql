@@ -1,5 +1,6 @@
-CREATE USER graphql PASSWORD 'password';
+-- $ npx postgraphile -c postgres://graphql:password@fin/cms --schema app_public --watch --token app_public.jwt_token --secret asdf --default-role app_user_anonymous --disable-default-mutations
 
+CREATE USER graphql PASSWORD 'password';
 
 CREATE SCHEMA app_public;
 CREATE SCHEMA app_hidden;

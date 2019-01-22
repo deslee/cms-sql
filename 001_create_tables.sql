@@ -1,5 +1,3 @@
--- $ npx postgraphile -c postgres://graphql:password@fin/cms --schema app_public --watch --token app_public.jwt_token --secret asdf
-
 /* We wanna store the password in a private schema, because Postgraphile likes to use full table selects */
 CREATE TABLE app_private.Users (
   id          text PRIMARY KEY,
@@ -22,6 +20,8 @@ CREATE TABLE app_public.Users (
 );
 ALTER TABLE app_public.Users ENABLE ROW LEVEL SECURITY;
 CREATE POLICY select_user ON app_public.Users FOR SELECT
+  USING (id=current_setting('jwt.claims.userId', true)::text);
+CREATE POLICY update_user ON app_public.Users FOR UPDATE
   USING (id=current_setting('jwt.claims.userId', true)::text);
 GRANT SELECT, UPDATE ON TABLE app_public.Users to app_user;
 -- DROP POLICY select_user ON app_public.Users;

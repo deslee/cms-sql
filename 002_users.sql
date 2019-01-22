@@ -49,4 +49,3 @@ CREATE FUNCTION app_public.me() RETURNS app_public.users as $$
   SELECT * FROM app_public.users
   WHERE id = current_setting('jwt.claims.userId', true)::text
 $$ language sql stable;
-
