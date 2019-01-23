@@ -1,7 +1,7 @@
 CREATE TABLE app_public.Items (
   id          text,
   zone_id     text REFERENCES app_public.Zones NOT NULL,
-  name        text,
+  name        text NOT NULL,
   password    text,
   data        jsonb,
   date        timestamp with time zone,

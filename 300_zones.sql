@@ -1,6 +1,6 @@
 CREATE TABLE app_public.Zones (
   id          text PRIMARY KEY,
-  name        text,
+  name        text NOT NULL,
   data        jsonb,
   created_by  text,
   updated_by  text,

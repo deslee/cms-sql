@@ -1,7 +1,7 @@
 CREATE TABLE app_public.Groups (
   id          text,
   zone_id     text REFERENCES app_public.Zones NOT NULL,
-  name        text,
+  name        text NOT NULL,
   data        jsonb,
   created_by  text,
   updated_by  text,
