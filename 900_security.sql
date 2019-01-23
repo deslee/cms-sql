@@ -1,3 +1,11 @@
+-- USERS
+ALTER TABLE app_public.Users ENABLE ROW LEVEL SECURITY;
+GRANT SELECT, UPDATE ON TABLE app_public.Users to cms_app_user;
+CREATE POLICY select_user ON app_public.Users FOR SELECT
+  USING (id=current_setting('jwt.claims.userId', true)::text);
+CREATE POLICY update_user ON app_public.Users FOR UPDATE
+  USING (id=current_setting('jwt.claims.userId', true)::text);
+
 -- ZONES
 ALTER TABLE app_public.Zones ENABLE ROW LEVEL SECURITY;
 GRANT SELECT, UPDATE ON TABLE app_public.Zones to cms_app_user;

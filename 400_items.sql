@@ -5,6 +5,7 @@ CREATE TABLE app_public.Items (
   name        text,
   password    text,
   data        jsonb,
+  date        timestamp with time zone,
   type        text,
   created_by  text,
   updated_by  text,
