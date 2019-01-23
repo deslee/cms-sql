@@ -15,3 +15,5 @@ CREATE TABLE app_public.Items (
 );
 
 CREATE INDEX IF NOT EXISTS "items_zoneid_index" ON app_public.Items(zone_id);
+CREATE INDEX IF NOT EXISTS "items_date_index" ON app_public.Items(date);
+CREATE INDEX IF NOT EXISTS "items_type_index" ON app_public.Items(type);
