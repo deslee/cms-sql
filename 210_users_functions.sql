@@ -15,7 +15,7 @@ CREATE FUNCTION app_public.register(email text, password text, data JSON) return
   end;
 $$ language plpgsql STRICT SECURITY DEFINER;
 
-GRANT EXECUTE ON FUNCTION app_public.register(text, text, json) TO app_user_anonymous;
+GRANT EXECUTE ON FUNCTION app_public.register(text, text, json) TO cms_app_user_anonymous;
 
 CREATE TYPE app_public.jwt_token as (
   role text,
@@ -36,14 +36,14 @@ CREATE FUNCTION app_public.authenticate(
     WHERE "PUBLIC".email=authenticate.email;
 
   IF userPrivate.password = crypt(authenticate.password, userPrivate.password) THEN
-    return ('app_user', userPrivate.id)::app_public.jwt_token;
+    return ('cms_app_user', userPrivate.id)::app_public.jwt_token;
   ELSE
     return null;
   end if;
   end;
 $$ LANGUAGE plpgsql STRICT SECURITY DEFINER;
 
-GRANT EXECUTE ON FUNCTION app_public.authenticate(text, text) TO app_user_anonymous;
+GRANT EXECUTE ON FUNCTION app_public.authenticate(text, text) TO cms_app_user_anonymous;
 
 CREATE FUNCTION app_public.me() RETURNS app_public.users as $$
   SELECT * FROM app_public.users
