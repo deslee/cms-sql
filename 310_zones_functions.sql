@@ -1,4 +1,4 @@
-CREATE FUNCTION app_public.createZone(zone app_public.Zones) returns app_public.Zones AS $$
+CREATE OR REPLACE FUNCTION app_public.createZone(zone app_public.Zones) returns app_public.Zones AS $$
   declare ZResult app_public.zones;
 
   BEGIN
@@ -7,5 +7,4 @@ CREATE FUNCTION app_public.createZone(zone app_public.Zones) returns app_public.
     RETURN ZResult;
   end;
 $$ language plpgsql STRICT SECURITY DEFINER;
---DROP FUNCTION app_public.createZone(app_public.Zones);
 GRANT EXECUTE ON FUNCTION app_public.createZone(app_public.Zones) TO cms_app_user;

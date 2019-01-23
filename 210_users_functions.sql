@@ -1,9 +1,13 @@
 -- thanks to https://github.com/graphile/postgraphile/blob/master/examples/forum/TUTORIAL.md#registering-users
-CREATE FUNCTION app_public.register(email text, password text, data JSON) returns app_public.users AS $$
+CREATE OR REPLACE FUNCTION app_public.register(email text, password text, data JSON) returns app_public.users AS $$
   DECLARE publicUser app_public.users;
   DECLARE privateUser app_private.users;
 
   BEGIN
+    IF length(password) < 8 THEN
+      RAISE EXCEPTION 'password too short';
+    END IF;
+
     INSERT INTO app_private.users (id, password) VALUES
     (uuid_generate_v4(), crypt(password, gen_salt('bf')))
     RETURNING * into privateUser;
@@ -22,7 +26,7 @@ CREATE TYPE app_public.jwt_token as (
   userId text
 );
 
-CREATE FUNCTION app_public.authenticate(
+CREATE OR REPLACE FUNCTION app_public.authenticate(
   email text,
   password text
 ) returns app_public.jwt_token as $$
@@ -45,7 +49,7 @@ $$ LANGUAGE plpgsql STRICT SECURITY DEFINER;
 
 GRANT EXECUTE ON FUNCTION app_public.authenticate(text, text) TO cms_app_user_anonymous;
 
-CREATE FUNCTION app_public.me() RETURNS app_public.users as $$
+CREATE OR REPLACE FUNCTION app_public.me() RETURNS app_public.users as $$
   SELECT * FROM app_public.users
   WHERE id = current_setting('jwt.claims.userId', true)::text
 $$ language sql stable;

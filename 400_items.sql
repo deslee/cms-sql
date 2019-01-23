@@ -1,4 +1,3 @@
-
 CREATE TABLE app_public.Items (
   id          text,
   zone_id     text REFERENCES app_public.Zones NOT NULL,
