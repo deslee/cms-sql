@@ -21,6 +21,24 @@ $$ language plpgsql STRICT SECURITY DEFINER;
 
 GRANT EXECUTE ON FUNCTION app_public.register(text, text, json) TO cms_app_user_anonymous;
 
+CREATE OR REPLACE FUNCTION app_public.update_password(user_id text, newPassword text) returns app_public.users AS $$
+  DECLARE publicUser app_public.users;
+
+  BEGIN
+    IF length(newPassword) < 8 THEN
+      RAISE EXCEPTION 'password too short';
+    END IF;
+
+    UPDATE app_private.users SET password=crypt(newPassword, gen_salt('bf')) WHERE id=user_id;
+
+    SELECT * into publicUser FROM app_public.users WHERE id=user_id;
+
+    return publicUser;
+  end;
+$$ language plpgsql STRICT SECURITY DEFINER;
+
+GRANT EXECUTE ON FUNCTION app_public.update_password(text, text) TO cms_app_user;
+
 CREATE TYPE app_public.jwt_token as (
   role text,
   userId text
