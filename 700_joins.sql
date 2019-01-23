@@ -9,6 +9,8 @@ CREATE TABLE app_public.ZoneUsers (
   updated_at  timestamp,
   PRIMARY KEY (zone_id, user_id)
 );
+CREATE INDEX IF NOT EXISTS "zoneusers_zoneid_index" ON app_public.ZoneUsers(zone_id);
+CREATE INDEX IF NOT EXISTS "zoneusers_userid_index" ON app_public.ZoneUsers(user_id);
 
 CREATE TABLE app_public.ItemGroups (
   item_id     text,
@@ -24,6 +26,9 @@ CREATE TABLE app_public.ItemGroups (
   FOREIGN KEY (group_id, zone_id) REFERENCES app_public.groups(id, zone_id),
   PRIMARY KEY (item_id, group_id, zone_id)
 );
+CREATE INDEX IF NOT EXISTS "itemgroups_zoneid_index" ON app_public.ItemGroups(zone_id);
+CREATE INDEX IF NOT EXISTS "itemgroups_itemid_index" ON app_public.ItemGroups(item_id);
+CREATE INDEX IF NOT EXISTS "itemgroups_groupid_index" ON app_public.ItemGroups(group_id);
 
 CREATE TABLE app_public.ItemAssets (
   item_id     text,
@@ -39,3 +44,6 @@ CREATE TABLE app_public.ItemAssets (
   FOREIGN KEY (asset_id, zone_id) REFERENCES app_public.assets(id, zone_id),
   PRIMARY KEY (item_id, asset_id, zone_id)
 );
+CREATE INDEX IF NOT EXISTS "itemassets_zoneid_index" ON app_public.ItemAssets(zone_id);
+CREATE INDEX IF NOT EXISTS "itemassets_itemid_index" ON app_public.ItemAssets(item_id);
+CREATE INDEX IF NOT EXISTS "itemassets_assetid_index" ON app_public.ItemAssets(asset_id);

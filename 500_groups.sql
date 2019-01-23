@@ -10,3 +10,5 @@ CREATE TABLE app_public.Groups (
   PRIMARY KEY (id, zone_id),
   UNIQUE (zone_id, name)
 );
+
+CREATE INDEX IF NOT EXISTS "groups_zoneid_index" ON app_public.Groups(zone_id);

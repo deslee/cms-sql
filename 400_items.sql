@@ -13,3 +13,5 @@ CREATE TABLE app_public.Items (
   PRIMARY KEY (id, zone_id),
   UNIQUE (zone_id, name)
 );
+
+CREATE INDEX IF NOT EXISTS "items_zoneid_index" ON app_public.Items(zone_id);

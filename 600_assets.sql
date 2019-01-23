@@ -9,3 +9,5 @@ CREATE TABLE app_public.Assets (
   updated_at  timestamp,
   PRIMARY KEY (id, zone_id)
 );
+
+CREATE INDEX IF NOT EXISTS "assets_zoneid_index" ON app_public.Assets(zone_id);
