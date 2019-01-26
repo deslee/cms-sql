@@ -1,4 +1,4 @@
-CREATE TABLE app_public.Zones (
+CREATE TABLE app_public.Zone (
   id          text PRIMARY KEY,
   name        text NOT NULL,
   data        jsonb,
@@ -9,4 +9,4 @@ CREATE TABLE app_public.Zones (
   UNIQUE (name)
 );
 
-COMMENT ON TABLE app_public.Zones is E'@omit create';
+COMMENT ON TABLE app_public.Zone is E'@omit create';
