@@ -4,13 +4,21 @@ const { postgraphile } = require('postgraphile')
 const passport = require('passport')
 const LocalStrategy = require('passport-local').Strategy
 const passportJWT = require('passport-jwt')
+const cors = require('cors')
+const Busboy = require('busboy')
 const expressPlayground = require('graphql-playground-middleware-express').default
 const jsonwebtoken = require('jsonwebtoken')
+const fs = require('fs')
+const path = require('path')
+const os = require('os')
+const uuidv4 = require('uuid/v4');
 
 const config = require('./config')
 const repo = require('./repository')
 
 const app = express();
+
+app.use(cors())
 
 // graphql middleware
 // configure local strategy (for token endpoint)
@@ -23,7 +31,7 @@ passport.use(new LocalStrategy({
         .then(session => {
             if (session && session.user_id && session.token) {
                 done(null, {
-                    id: session.user_id,
+                    userId: session.user_id,
                     sessionId: session.token
                 })
                 return
@@ -78,13 +86,50 @@ app.post('/token', (req, res) => {
             const token = jsonwebtoken.sign(
                 {
                     sessionId: user.sessionId,
-                    userId: user.id
+                    userId: user.userId
                 },
                 config.jwtSecret
             )
             return res.status(200).json({ token: token })
         }
     })(req, res)
+})
+
+app.get('/asset/:id', (req, res) => {
+    const id = req.params.id;
+
+    // get the asset
+    const asset;
+
+    // determine the filename
+    const filename;
+
+    // get the size
+    if(req.query.w) {
+        const sizes = asset.data.sizes;
+        filename = sizes[req.query.w]
+
+        if (!filename) {
+            return res.status(404)
+        }
+    }
+
+    fs.createReadStream(path.join('./assets', filename)).pipe(res)
+    return res.status(200);
+})
+
+app.post('/uploadAsset', passport.authenticate('jwt', { session: false }), (req, res) => {
+    const id = uuidv4()
+    const busboy = new Busboy({ headers: req.headers })
+    busboy.on('file', function (fieldname, file, filename, encoding, mimetype) {
+        var saveTo = path.join('./assets', path.basename(fieldname));
+        file.pipe(fs.createWriteStream(saveTo));
+    });
+    busboy.on('finish', function () {
+        res.writeHead(200, { 'Connection': 'close' });
+        res.end("That's all folks!");
+    });
+    return req.pipe(busboy)
 })
 
 // configure postgraphile
@@ -119,7 +164,11 @@ app.use('/playground', expressPlayground({
 app.use((req, res, next) => {
     passport.authenticate('jwt', { session: false }, (err, user, info) => {
         req.login(user, { session: false }, err => {
-            gqlHandler(req, res, next)
+            if (err) {
+                req.status(500).json({err})
+            } else {
+                gqlHandler(req, res, next)
+            }
         })
     })(req, res)
 })
