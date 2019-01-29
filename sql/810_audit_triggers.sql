@@ -54,24 +54,24 @@ CREATE TRIGGER audit_fields_on_update BEFORE UPDATE ON app_public.Asset
   FOR EACH ROW EXECUTE PROCEDURE app_public.trigger_set_audit_update_fields();
 
 -- ZoneUsers
-CREATE TRIGGER audit_fields_on_create BEFORE INSERT ON app_public.ZoneUser
+CREATE TRIGGER audit_fields_on_create BEFORE INSERT ON app_public.Zone_User
   FOR EACH ROW EXECUTE PROCEDURE app_public.trigger_set_audit_create_fields();
 
-CREATE TRIGGER audit_fields_on_update BEFORE UPDATE ON app_public.ZoneUser
+CREATE TRIGGER audit_fields_on_update BEFORE UPDATE ON app_public.Zone_User
   FOR EACH ROW EXECUTE PROCEDURE app_public.trigger_set_audit_update_fields();
 
 
 -- ItemAssets
-CREATE TRIGGER audit_fields_on_create BEFORE INSERT ON app_public.ItemAsset
+CREATE TRIGGER audit_fields_on_create BEFORE INSERT ON app_public.Item_Asset
   FOR EACH ROW EXECUTE PROCEDURE app_public.trigger_set_audit_create_fields();
 
-CREATE TRIGGER audit_fields_on_update BEFORE UPDATE ON app_public.ItemAsset
+CREATE TRIGGER audit_fields_on_update BEFORE UPDATE ON app_public.Item_Asset
   FOR EACH ROW EXECUTE PROCEDURE app_public.trigger_set_audit_update_fields();
 
 -- ItemGroups
-CREATE TRIGGER audit_fields_on_create BEFORE INSERT ON app_public.ItemGroup
+CREATE TRIGGER audit_fields_on_create BEFORE INSERT ON app_public.Item_Group
   FOR EACH ROW EXECUTE PROCEDURE app_public.trigger_set_audit_create_fields();
 
-CREATE TRIGGER audit_fields_on_update BEFORE UPDATE ON app_public.ItemGroup
+CREATE TRIGGER audit_fields_on_update BEFORE UPDATE ON app_public.Item_Group
   FOR EACH ROW EXECUTE PROCEDURE app_public.trigger_set_audit_update_fields();
 
