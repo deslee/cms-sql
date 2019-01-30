@@ -16,6 +16,11 @@ const config = convict({
         default: '',
         env: 'JWT_SECRET'
     },
+    assets_directory: {
+        format: String,
+        default: 'assets',
+        env: 'ASSETS_DIRECTORY'
+    },
     port: {
         format: 'port',
         default: 80,
@@ -29,5 +34,6 @@ module.exports = {
     databaseSystemUrl: config.get('database_system_url'),
     databaseUrl: config.get('database_url'),
     jwtSecret: config.get('jwt_secret'),
-    port: config.get('port')
+    port: config.get('port'),
+    assetsDirectory: config.get('assets_directory'),
 }

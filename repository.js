@@ -36,11 +36,21 @@ async function validateZoneUser(zoneId, userId) {
 }
 module.exports.validateZoneUser = validateZoneUser
 
-async function insertAsset({ id, state, siteId, type, data: { extension, originalFilename, key } }) {
+async function insertAsset({ id, state, siteId, type, data }) {
     const values = [
-        id, siteId, state, type, JSON.stringify({extension, originalFilename, key})
+        id, siteId, state, type, data
     ]
     const res = await pool.query('INSERT INTO app_public.asset (id, zone_id, state, type, data) values ($1, $2, $3, $4, $5)', values)
     console.log(res);
 }
 module.exports.insertAsset = insertAsset
+
+async function findAsset(id) {
+    const res = await pool.query('SELECT * FROM app_public.asset a WHERE a.id=$1', [id])
+    if (res.rowCount > 0) {
+        return res.rows[0]
+    } else {
+        return null
+    }
+}
+module.exports.findAsset = findAsset
