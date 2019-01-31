@@ -1,0 +1,34 @@
+{
+  "name": "generic-cms",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/deslee/cms-sql.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/deslee/cms-sql/issues"
+  },
+  "homepage": "https://github.com/deslee/cms-sql#readme",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "convict": "^4.4.1",
+    "cors": "^2.8.5",
+    "express": "^4.16.4",
+    "graphql-playground-middleware-express": "^1.7.8",
+    "jsonwebtoken": "^8.4.0",
+    "multer": "^1.4.1",
+    "passport": "^0.4.0",
+    "passport-jwt": "^4.0.0",
+    "passport-local": "^1.0.0",
+    "pg": "^7.8.0",
+    "postgraphile": "^4.2.0",
+    "uuid": "^3.3.2"
+  }
+}

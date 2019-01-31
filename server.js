@@ -1,5 +1,5 @@
-const app = require('./app')
-const config = require('./config')
+const app = require('./server/app')
+const config = require('./server/config')
 
 app.listen(config.port, (err) => {
     if (err) {
