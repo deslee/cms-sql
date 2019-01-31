@@ -1,0 +1,48 @@
+variables:
+  CONTAINER_IMAGE_BASE: registry.gitlab.com/$CI_PROJECT_PATH
+  DOCKER_HOST: tcp://docker:2375
+
+stages:
+  - build
+  - deploy_stage
+  - deploy_prod
+
+build_go:
+  image: docker:stable
+  services:
+    - docker:dind
+  stage: build
+  script:
+    - docker info
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN registry.gitlab.com
+    - docker pull $CONTAINER_IMAGE_BASE/http:latest || true
+    - docker build --cache-from $CONTAINER_IMAGE_BASE/http:latest --tag $CONTAINER_IMAGE_BASE/http:$CI_COMMIT_SHA --tag $CONTAINER_IMAGE_BASE/http:latest --target cms-http ./server
+    - docker build --cache-from $CONTAINER_IMAGE_BASE/jobs:latest --tag $CONTAINER_IMAGE_BASE/jobs:$CI_COMMIT_SHA --tag $CONTAINER_IMAGE_BASE/jobs:latest --target cms-jobs ./jobProcessor
+    - docker push $CONTAINER_IMAGE_BASE/http:$CI_COMMIT_SHA
+    - docker push $CONTAINER_IMAGE_BASE/http:latest
+    - docker push $CONTAINER_IMAGE_BASE/jobs:$CI_COMMIT_SHA
+    - docker push $CONTAINER_IMAGE_BASE/jobs:latest
+
+deploy_stage_job:
+  image: deslee/ubuntu-with-ssh:latest
+  stage: deploy_stage
+  script:
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add - > /dev/null
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - ssh -o StrictHostKeyChecking=no root@$SERVER_HOST sudo docker login -u gitlab-ci-token -p $CI_JOB_TOKEN registry.gitlab.com
+    - ssh -o StrictHostKeyChecking=no root@$SERVER_HOST sudo docker stop stage.cms.le3.io-http || true
+    - ssh -o StrictHostKeyChecking=no root@$SERVER_HOST sudo docker rm stage.cms.le3.io-http || true
+    - ssh -o StrictHostKeyChecking=no root@$SERVER_HOST sudo docker run --restart unless-stopped -d --link postgres -v 'stage.cms.assets:/app/assets' --name stage.cms.le3.io-http -e 'LETSENCRYPT_HOST=stage.cms.le3.io' -e 'VIRTUAL_HOST=stage.cms.le3.io' -e 'PORT=80' -e JWT_SECRET=$JWT_SECRET -e DATABASE_URL=postgres://cms_graphql:$DB_PASS@postgres/cms -e DATABASE_SYSTEM_URL=postgres://cms_system:$DB_SYSTEM_PASS@postgres/cms $CONTAINER_IMAGE_BASE/http:$CI_COMMIT_SHA
+    - ssh -o StrictHostKeyChecking=no root@$SERVER_HOST sudo docker stop stage.cms.le3.io-jobs || true
+    - ssh -o StrictHostKeyChecking=no root@$SERVER_HOST sudo docker rm stage.cms.le3.io-jobs || true
+    - ssh -o StrictHostKeyChecking=no root@$SERVER_HOST sudo docker run --restart unless-stopped -d --link postgres -v 'stage.cms.assets:/app/assets' --name stage.cms.le3.io-jobs -e CONNECTION_STRING="user=cms_system password=$DB_SYSTEM_PASS dbname=cms sslmode=disable host=postgres" -e ASSETS_DIR=/app/assets $CONTAINER_IMAGE_BASE/jobs:$CI_COMMIT_SHA
+
+deploy_prod_job:
+  image: ubuntu
+  stage: deploy_prod
+  script:
+    - ssh root@$SERVER_HOST sudo docker login -u gitlab-ci-token -p $CI_JOB_TOKEN registry.gitlab.com
+    - ssh root@$SERVER_HOST sudo docker stop
+  when: manual
